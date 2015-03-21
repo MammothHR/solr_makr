@@ -13,9 +13,11 @@ module SolrMakr
     include SolrRequest
 
     DEFAULT_HOME  = '/opt/solr/jetty-solr/'
+    DEFAULT_HOST  = 'localhost'
     DEFAULT_PORT  = 8983
 
     attribute :home, Pathlike, default: :default_home
+    attribute :host, String, default: :default_host
     attribute :port, Integer, default: :default_port
 
     def initialize(env = ENV)
@@ -73,6 +75,10 @@ module SolrMakr
 
     def default_home
       Pathname.new env.fetch 'SOLR_HOME', DEFAULT_HOME
+    end
+
+    def default_host
+      env.fetch 'SOLR_HOST', DEFAULT_HOST
     end
   end
 end

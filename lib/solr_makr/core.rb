@@ -26,7 +26,7 @@ module SolrMakr
     attribute :name, CoreName
     attribute :config, SolrConfiguration
 
-    delegate :core_directory, :port, to: :config
+    delegate :core_directory, :host, :port, to: :config
     delegate :exist?, to: :instance_dir
 
     # @return [Pathname]

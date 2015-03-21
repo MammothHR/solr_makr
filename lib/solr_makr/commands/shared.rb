@@ -23,7 +23,7 @@ module SolrMakr
       # @return [Struct]
       attr_reader :options
 
-      delegate :home, :port, prefix: :solr, to: :solr_config
+      delegate :home, :host, :port, prefix: :solr, to: :solr_config
 
       alias_method :port, :solr_port
 
@@ -41,6 +41,7 @@ module SolrMakr
         options.default shared_options
 
         solr_config.home = options.solr_home
+        solr_config.host = options.solr_host
         solr_config.port = options.solr_port
 
         run
@@ -74,6 +75,7 @@ module SolrMakr
       def shared_options
         {
           solr_home: solr_home,
+          solr_host: solr_host,
           solr_port: solr_port
         }
       end

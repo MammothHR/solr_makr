@@ -17,7 +17,7 @@ module SolrMakr
 
     private
     def solr_cores_url
-      "http://localhost:%d/solr/admin/cores" % [port]
+      "http://%s:%d/solr/admin/cores" % [host, port]
     end
   end
 end

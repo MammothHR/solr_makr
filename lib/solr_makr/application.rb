@@ -15,6 +15,7 @@ module SolrMakr
 
       global_option '-d', '--solr-home DIR', 'Path to the solr home directory'
       global_option '-p', '--solr-port PORT', Integer, 'Port to use to communicate with the solr API'
+      global_option '-H', '--solr-host HOST', String, 'Host [default localhost]'
       global_option '-V', '--verbose', 'Show verbose output.'
 
       command :create do |c|
@@ -36,11 +37,22 @@ module SolrMakr
       command :destroy do |c|
         c.syntax      = "#{NAME} destroy NAME"
 
-        c.option '--purge', 'Purge the solr core\'s instance directory'
-
         c.description = "Unload and remove a solr core."
 
         c.when_called Commands::DestroyCore, :run!
+
+        c.option '--purge', 'Purge the solr core\'s instance directory'
+      end
+
+      command :yaml do |c|
+        c.syntax      = "#{NAME} yaml NAME"
+
+        c.description = 'Print a YAML config for sunspot to stdout'
+
+        c.when_called Commands::WriteYaml, :run!
+
+        c.option  '-e', '--env ENVIRONMENT', 'Environment name'
+        c.option  '--log-level LEVEL', String, 'Log level'
       end
 
       run!
