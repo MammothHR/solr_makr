@@ -1,5 +1,6 @@
 require "fileutils"
 require "pathname"
+require "yaml"
 
 class Pathname
   alias_method :to_str, :to_s
@@ -26,6 +27,7 @@ require "solr_makr/commands/shared"
 require "solr_makr/commands/create_core"
 require "solr_makr/commands/destroy_core"
 require "solr_makr/commands/list_cores"
+require "solr_makr/commands/write_yaml"
 require "solr_makr/application"
 
 module SolrMakr
