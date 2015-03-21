@@ -4,4 +4,4 @@ require "solr_makr"
 
 app = SolrMakr::Application.new
 
-app.run if $0 == __FILE__
+app.run
