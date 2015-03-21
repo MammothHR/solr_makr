@@ -60,6 +60,8 @@ module SolrMakr
         schema:         'schema.xml'
       }
 
+      params[:'collection.configName'] = 'core01'
+
       solr_request solr_cores_url, params: params
     end
 
