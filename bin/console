@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "solr_makr"
+
+require "pry"
+
+Pry.start
