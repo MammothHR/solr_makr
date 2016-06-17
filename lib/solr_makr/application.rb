@@ -2,60 +2,40 @@ module SolrMakr
   class Application
     include Commander::Methods
 
-    NAME = 'solr-makr'
+    # @param [IO, File, #write] output
+    def initialize(output: STDOUT)
+      @output       = output
+
+      @exit_status  = 0
+    end
+
+    attr_reader :output
+    attr_reader :exit_status
+
+    delegate :configuration, to: SolrMakr
 
     def run
-      program :name, NAME
-      program :version, SolrMakr::VERSION
-      program :description, 'Create a solr core programmatically'
-      program :help, 'Author', 'Alexa Grey <alexag@hranswerlink.com>'
-      program :help_formatter, Commander::HelpFormatter::TerminalCompact
+      program :name,            SolrMakr::BIN_NAME
+      program :version,         SolrMakr::VERSION
+      program :description,     'Create and manage solr collections via CLI'
+      program :help,            'Author', 'Alexa Grey <alexag@hranswerlink.com>'
 
       default_command :help
 
-      global_option '-d', '--solr-home DIR', 'Path to the solr home directory'
-      global_option '-p', '--solr-port PORT', Integer, 'Port to use to communicate with the solr API'
-      global_option '-H', '--solr-host HOST', String, 'Host [default localhost]'
-      global_option '-V', '--verbose', 'Show verbose output.'
+      global_option '-Z', '--zookeeper HOST', String,   "Zookeeper host(s) [default: #{configuration.zookeeper}]"
+      global_option '-p', '--solr-port PORT', Integer,  "Port solr is running on [default: #{configuration.solr_port}]"
+      global_option '-H', '--solr-host HOST', String,   "Solr Host [default: #{configuration.solr_host}]"
+      global_option '-V', '--verbose',                  "Show verbose output."
 
-      command :create do |c|
-        c.syntax      = "#{NAME} create NAME"
+      ApplicationDispatch.generate_commands! self
 
-        c.description = "Create and register a solr core."
+      run!.tap do |buffer|
+        if buffer.kind_of?(SolrMakr::Commands::Buffer)
+          output.write buffer.to_s
 
-        c.when_called Commands::CreateCore, :run!
+          @exit_status = buffer.exit_status
+        end
       end
-
-      command :list do |c|
-        c.syntax      = "#{NAME} list"
-
-        c.description = "List installed solr cores."
-
-        c.when_called Commands::ListCores, :run!
-      end
-
-      command :destroy do |c|
-        c.syntax      = "#{NAME} destroy NAME"
-
-        c.description = "Unload and remove a solr core."
-
-        c.when_called Commands::DestroyCore, :run!
-
-        c.option '--purge', 'Purge the solr core\'s instance directory'
-      end
-
-      command :yaml do |c|
-        c.syntax      = "#{NAME} yaml NAME"
-
-        c.description = 'Print a YAML config for sunspot to stdout'
-
-        c.when_called Commands::WriteYaml, :run!
-
-        c.option  '-e', '--env ENVIRONMENT', 'Environment name'
-        c.option  '--log-level LEVEL', String, 'Log level'
-      end
-
-      run!
     end
   end
 end

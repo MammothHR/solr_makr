@@ -1,30 +1,39 @@
 module SolrMakr
   module Commands
-    class WriteYaml
-      include Shared
+    class WriteYaml < ActiveInteraction::Base
+      include AbstractCommand
 
-      config.acts_on_single_core = true
+      STDOUT_OUTPUTS = [?-, nil, 'stdout']
 
-      def run
-        options.default log_level: 'WARNING', env: 'production'
+      string :name,         description: 'Collection name'
+      string :output,       description: 'File to output', default: nil
+      string :environment,  default: 'production'
+      string :log_level,    default: 'WARNING'
 
-        config = build_config
+      def execute
+        if output_to_stdout?
+          buffer.write sunspot_configuration.to_yaml
+        else
+          File.open(output, 'w') do |f|
+            YAML.dump sunspot_configuration, f
+          end
 
-        say config.to_yaml
+          buffer.ok "Wrote configuration to #{output}"
+        end
       end
 
-      # @return [{String => {String => {String => Object}}}]
-      def build_config
-        {
-          options.env => {
-            "solr" => {
-              "hostname"  => solr_host,
-              "port"      => solr_port,
-              "log_level" => options.log_level,
-              "path"      => "/solr/#{core.name}"
-            }
-          }
-        }
+      def output_to_stdout?
+        if given?(:output)
+          output.in?(STDOUT_OUTPUTS)
+        else
+          true
+        end
+      end
+
+      # @!attribute [r] sunspot_configuration
+      # @return [SolrMakr::SunspotConfiguration]
+      attr_lazy_reader :sunspot_configuration do
+        SolrMakr::SunspotConfiguration.new collection: name, environment: environment, log_level: log_level
       end
     end
   end

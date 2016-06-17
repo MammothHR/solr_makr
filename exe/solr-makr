@@ -2,6 +2,10 @@
 
 require "solr_makr"
 
-app = SolrMakr::Application.new
+$app = SolrMakr::Application.new
 
-app.run
+if __FILE__ == $0
+  $app.run
+
+  exit $app.exit_status
+end
