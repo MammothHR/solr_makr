@@ -4,8 +4,6 @@ require "solr_makr"
 
 $app = SolrMakr::Application.new
 
-if __FILE__ == $0
-  $app.run
+$app.run
 
-  exit $app.exit_status
-end
+exit $app.exit_status
